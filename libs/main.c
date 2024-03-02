@@ -194,4 +194,3 @@ int create_file(char * name, char * dir, char * read_from)
     free(buffer);
     return EXIT_SUCCESS;
 }
-

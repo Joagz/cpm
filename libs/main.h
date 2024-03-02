@@ -15,12 +15,6 @@
 #define SRC_README "./data/README.md"
 #define SRC_LICENSE "./data/LICENSE.txt"
 
-#define PROJECT_NAME "PROJECT_NAME"
-#define YEAR "YEAR"
-#define COPYRIGHT_HOLDER "COPYRIGHT_HOLDER"
-
-#define DEF_CPR_HOLDER "[your name]"
-
 void check_args(int argc);
 void err_n_exit(void* ptr, char* msg);
 int add_files(char * wdir, char *fdirloc, char *fincl); 
