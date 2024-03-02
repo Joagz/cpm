@@ -11,11 +11,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include "main.h"
+
+// global project name to use between functions
+static char * projname = "my-project";
+
+// env vars on files
+char *env_vars[] = {
+    "PROJECT_NAME", "YEAR", "COPYRIGHT_HOLDER"
+};
 
 // define arguments for 'cpm' command
 static struct option long_options[] =
@@ -63,9 +72,11 @@ int main(int argc, char ** argv)
         }
     }
   
-    RET_VALUE = add_files(dir, dirvalue, cvalue, include);
-
+    projname = cvalue;
+    RET_VALUE = add_files(dir, dirvalue, include);
+    
     free(dir);
+
     return RET_VALUE;
 }
 
@@ -80,7 +91,7 @@ void check_args(int argc)
 // debug & exit in case of a fatal error
 void err_n_exit(void * ptr, char* msg)
 {
-   if((ptr) == NULL)
+   if(!ptr)
    {
         perror(msg);
 
@@ -114,19 +125,23 @@ void err_n_exit(void * ptr, char* msg)
 //          * README.md
 //          * LICENSE.md
 //
-int add_files(char * wdir, char *fdirloc, char *fproj, char *fincl) 
+int add_files(char * wdir, char *fdirloc, char *fincl) 
 {
     char *dir = NULL;
 
     if(fdirloc != NULL){
         char buf[PATH_MAX]; 
         dir = realpath(fdirloc, buf);
-       
+      
+        printf("dir %s\n", dir);
+
         // Create if directory doesn't exist
-        if(!dir){
+        if(dir == NULL) {
+            printf("dir is null, let's change it\n");
             dir = (char*) malloc(strlen(wdir) + strlen(fdirloc));
-            strcpy(wdir, dir);
-            strcat(fdirloc, dir);
+            strcpy(dir, wdir);
+            strcat(dir, fdirloc);
+            printf("dir %s\n", dir);
             mkdir(dir, DIR_PERMISSION);
         }
 
@@ -136,21 +151,47 @@ int add_files(char * wdir, char *fdirloc, char *fproj, char *fincl)
 
     printf("* Creating project inside '%s'\n", dir);
 
-    // create files
+    char buf[PATH_MAX]; 
+    create_file(N_MAKEFILE, dir, SRC_MAKEFILE);
+    create_file(N_MAINC, dir, SRC_MAINC);
+    create_file(N_README, dir, SRC_README);
+    create_file(N_LICENSE, dir, SRC_LICENSE);
 
-
-    FILE * makefile_ptr;
-    FILE * mainc_ptr;
-    FILE * readme_ptr;
-    FILE * license_ptr;
-    
-         
-
-
-
-    printf("DEBUG:\n\t%s\n\t%s\n\t%s\n\t%s", wdir, fdirloc, fproj, fincl);
+    char * buffer = malloc(PATH_MAX);
+    strcpy(buffer, dir);
+    strcat(buffer, "/libs");
+    mkdir(buffer, DIR_PERMISSION);
+    free(buffer);
+    printf("DEBUG:\n\t%s\n\t%s\n\t%s", wdir, fdirloc, fincl);
 
     return EXIT_SUCCESS;
 }
 
+int create_file(char * name, char * dir, char * read_from)
+{
+    printf("Creating files... \n");
+    printf("DEBUG\n\t%s\n\t%s\n\t%s\n",name, dir, read_from);
+
+    char * finalname = (char*) malloc(PATH_MAX);
+    strcpy(finalname, dir);
+    strcat(finalname, "/");
+    strcat(finalname, name);
+
+    FILE * fptr;
+    FILE * srcptr;
+
+    srcptr = fopen(read_from, "r+");
+    fptr = fopen(finalname, "w+");
+
+    size_t bytes_read = 0;
+    char * buffer = (char*) malloc(MAX_READ);
+
+    int numread = fread(buffer, 1, MAX_READ, srcptr);
+    printf("READ %d BYTES FROM %s\n", numread, read_from);
+    fwrite(buffer, 1, numread, fptr);
+
+    free(finalname);
+    free(buffer);
+    return EXIT_SUCCESS;
+}
 
