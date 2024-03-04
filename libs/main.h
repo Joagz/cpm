@@ -1,4 +1,4 @@
-#define MAX_READ 2048
+#define MAX_READ 8192
 #define MAX_VAR 50
 #define MAX_LIBNAME 20
 #define MAX_ARGC 7

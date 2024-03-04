@@ -156,6 +156,9 @@ int add_files(char * wdir, char *fdirloc, char *fincl)
     create_file(N_README, dir, SRC_README);
     create_file(N_LICENSE, dir, SRC_LICENSE);
 
+    printf("FILE CREATION PHASE PASSED!\n\n\n");
+
+
     char * buffer = (char*) malloc(PATH_MAX);
     strcpy(buffer, dir);
     strcat(buffer, "/libs");
@@ -201,7 +204,7 @@ int create_file(char * name, char * dir, char * read_from)
         strcpy(buffer, res);
     }
 
-    fwrite(buffer, 1, numread, fptr);
+    fwrite(buffer, 1, strlen(buffer), fptr);
 
     free(finalname);
 

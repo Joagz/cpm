@@ -18,10 +18,11 @@ static char * get_var_value(char * varname)
     {
         time_t t = time(NULL);
         struct tm * time = localtime(&t);
- 
-        char * res = (char*) malloc(4);
+        
+        char * res = (char*) malloc(5);
 
-        sprintf(res, "%d", time->tm_year);
+        sprintf(res, "%d", 1900 + time->tm_year);
+    
         return res;
     }
 
@@ -78,10 +79,10 @@ char * put_var(char *to_read, char *replace_val, int pos, int end)
     memcpy(part2, to_read + end, size - end);
     
     char * result = malloc(strlen(part1) + strlen(part2) + 1);
-
+    
     strcpy(result, part1);
     strcat(result, part2);
-
+    result[strlen(part1) + strlen(part2)] = '\0';
     free(part1);
     free(part2);
 
