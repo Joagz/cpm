@@ -1,3 +1,3 @@
-# %PROJECT_NAME%
+# ?PROJECT_NAME?
 
 Modify your readme here

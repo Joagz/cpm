@@ -2,24 +2,50 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define SE struct envar
+
+static char * get_var_value(char * varname)
+{
+    extern char * projname;
+    if(strcmp(varname, PROJECT_NAME) == 0)
+    {
+        return projname;
+    }
+
+    if(strcmp(varname, YEAR) == 0)
+    {
+        time_t t = time(NULL);
+        struct tm * time = localtime(&t);
+ 
+        char * res = (char*) malloc(4);
+
+        sprintf(res, "%d", time->tm_year);
+        return res;
+    }
+
+    if(strcmp(varname, COPYRIGHT_HOLDER) == 0)
+    {  
+        return DEF_COPYRIGHT_HOLDER;
+    }
+
+    return NULL;
+}
 
 struct envar * get_var(int start, char *buffer)
 {
     struct envar    * res = (SE*) malloc(sizeof(SE));
-    char            * varname = (char*) malloc(MAX_VAR);
-
+    char            varname[50] = "";
     int i = start;
     for(; i < strlen(buffer); i++)
     {
-        if(buffer[i] == '%')
+        if(buffer[i] == VAR_CHAR)
         {
 
-            printf("Found at position %d\n",i);
             i++;
             start=i;
-            while(buffer[i] != '%') i++;
+            while(buffer[i] != VAR_CHAR) i++;
 
             memcpy(varname, buffer+start, i-start);
 
@@ -31,7 +57,7 @@ struct envar * get_var(int start, char *buffer)
     }
 
     res->pos    = start;
-    res->value  = varname;
+    res->value  = get_var_value(varname);
     res->end    = i+1;
     return res;
 
@@ -39,6 +65,7 @@ struct envar * get_var(int start, char *buffer)
 
 char * put_var(char *to_read, char *replace_val, int pos, int end)
 {
+
     size_t size = strlen(to_read);
 
     char * part1 = (char*) malloc(pos + strlen(replace_val));
@@ -48,22 +75,16 @@ char * put_var(char *to_read, char *replace_val, int pos, int end)
     part1[pos] = '\0';
 
     strcat(part1, replace_val);
-    memcpy(part2, to_read + end, size + strlen(replace_val));
+    memcpy(part2, to_read + end, size - end);
     
-    char * result = malloc(size + strlen(replace_val));
+    char * result = malloc(strlen(part1) + strlen(part2) + 1);
 
     strcpy(result, part1);
     strcat(result, part2);
 
+    free(part1);
+    free(part2);
+
     return result;
 }
-int main(){
-    char * str = "Hi %REPLACE%!";
-    struct envar * var = get_var(0,str);
 
-    char * new = put_var(str, "World", var->pos, var->end);
-
-    printf("%s\n", new);
-
-    return 0;
-}

@@ -5,6 +5,8 @@
 #define DEF_COPYRIGHT_HOLDER "[your name]"
 #define DEF_PROJECT_NAME "my-project"
 
+#define VAR_CHAR '?'
+
 #define MAX_VAR 50
 
 struct envar

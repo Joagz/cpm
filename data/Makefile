@@ -4,7 +4,7 @@ CFLAGS	= -Wall -D_FORTIFY_SOURCE=2 -Werror=implicit-function-declaration
 
 BINS	= main.o
 
-MAIN 	= %PROJECT_NAME%
+MAIN 	= ?PROJECT_NAME?
 
 ROOT	= ./
 

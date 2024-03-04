@@ -17,9 +17,11 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include "main.h"
+#include "tokens.h"
+
 
 // global project name to use between functions
-static char * projname = "my-project";
+char * projname = "my-project";
 
 // env vars on files
 char *env_vars[] = {
@@ -137,11 +139,9 @@ int add_files(char * wdir, char *fdirloc, char *fincl)
 
         // Create if directory doesn't exist
         if(dir == NULL) {
-            printf("dir is null, let's change it\n");
             dir = (char*) malloc(strlen(wdir) + strlen(fdirloc));
             strcpy(dir, wdir);
             strcat(dir, fdirloc);
-            printf("dir %s\n", dir);
             mkdir(dir, DIR_PERMISSION);
         }
 
@@ -151,19 +151,17 @@ int add_files(char * wdir, char *fdirloc, char *fincl)
 
     printf("* Creating project inside '%s'\n", dir);
 
-    char buf[PATH_MAX]; 
     create_file(N_MAKEFILE, dir, SRC_MAKEFILE);
     create_file(N_MAINC, dir, SRC_MAINC);
     create_file(N_README, dir, SRC_README);
     create_file(N_LICENSE, dir, SRC_LICENSE);
 
-    char * buffer = malloc(PATH_MAX);
+    char * buffer = (char*) malloc(PATH_MAX);
     strcpy(buffer, dir);
     strcat(buffer, "/libs");
     mkdir(buffer, DIR_PERMISSION);
     free(buffer);
     printf("DEBUG:\n\t%s\n\t%s\n\t%s", wdir, fdirloc, fincl);
-
     return EXIT_SUCCESS;
 }
 
@@ -187,10 +185,27 @@ int create_file(char * name, char * dir, char * read_from)
     char * buffer = (char*) malloc(MAX_READ);
 
     int numread = fread(buffer, 1, MAX_READ, srcptr);
-    printf("READ %d BYTES FROM %s\n", numread, read_from);
+   
+    struct envar * var = (SE*) malloc(sizeof(SE));
+
+    var->end=0;
+    var->pos=0;
+    var->value=NULL;
+
+    while((var = get_var(var->end, buffer)) != NULL) 
+    {
+        char * res = put_var(buffer, var->value, var->pos, var->end);
+
+        buffer = (char *) realloc(buffer, strlen(res));
+
+        strcpy(buffer, res);
+    }
+
     fwrite(buffer, 1, numread, fptr);
 
     free(finalname);
+
+    printf("RES: %s\n", buffer);
     free(buffer);
     return EXIT_SUCCESS;
 }

@@ -15,6 +15,8 @@
 #define SRC_README "./data/README.md"
 #define SRC_LICENSE "./data/LICENSE.txt"
 
+#define SE struct envar
+
 void check_args(int argc);
 void err_n_exit(void* ptr, char* msg);
 int add_files(char * wdir, char *fdirloc, char *fincl); 
