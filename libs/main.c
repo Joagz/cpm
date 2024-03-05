@@ -135,8 +135,6 @@ int add_files(char * wdir, char *fdirloc, char *fincl)
         char buf[PATH_MAX]; 
         dir = realpath(fdirloc, buf);
       
-        printf("dir %s\n", dir);
-
         // Create if directory doesn't exist
         if(dir == NULL) {
             dir = (char*) malloc(strlen(wdir) + strlen(fdirloc));
@@ -156,7 +154,6 @@ int add_files(char * wdir, char *fdirloc, char *fincl)
     create_file(N_README, dir, SRC_README);
     create_file(N_LICENSE, dir, SRC_LICENSE);
 
-    printf("FILE CREATION PHASE PASSED!\n\n\n");
 
 
     char * buffer = (char*) malloc(PATH_MAX);
@@ -164,15 +161,11 @@ int add_files(char * wdir, char *fdirloc, char *fincl)
     strcat(buffer, "/libs");
     mkdir(buffer, DIR_PERMISSION);
     free(buffer);
-    printf("DEBUG:\n\t%s\n\t%s\n\t%s", wdir, fdirloc, fincl);
     return EXIT_SUCCESS;
 }
 
 int create_file(char * name, char * dir, char * read_from)
 {
-    printf("Creating files... \n");
-    printf("DEBUG\n\t%s\n\t%s\n\t%s\n",name, dir, read_from);
-
     char * finalname = (char*) malloc(PATH_MAX);
     strcpy(finalname, dir);
     strcat(finalname, "/");
@@ -198,6 +191,8 @@ int create_file(char * name, char * dir, char * read_from)
     while((var = get_var(var->end, buffer)) != NULL) 
     {
         char * res = put_var(buffer, var->value, var->pos, var->end);
+ 
+        printf("%s\n%d\n%d\n", var->value, var->pos, var->end);
 
         buffer = (char *) realloc(buffer, strlen(res));
 
@@ -208,7 +203,6 @@ int create_file(char * name, char * dir, char * read_from)
 
     free(finalname);
 
-    printf("RES: %s\n", buffer);
     free(buffer);
     return EXIT_SUCCESS;
 }

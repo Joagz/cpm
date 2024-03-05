@@ -49,8 +49,6 @@ struct envar * get_var(int start, char *buffer)
             while(buffer[i] != VAR_CHAR) i++;
 
             memcpy(varname, buffer+start, i-start);
-
-            printf("%s\n", varname);
             
             break;
         }
@@ -59,7 +57,7 @@ struct envar * get_var(int start, char *buffer)
 
     res->pos    = start;
     res->value  = get_var_value(varname);
-    res->end    = i+1;
+    res->end    = i;
     return res;
 
 }
@@ -67,22 +65,23 @@ struct envar * get_var(int start, char *buffer)
 char * put_var(char *to_read, char *replace_val, int pos, int end)
 {
 
+    printf("Putting '%s'\n", replace_val);
+
     size_t size = strlen(to_read);
 
-    char * part1 = (char*) malloc(pos + strlen(replace_val));
-    char * part2 = (char*) malloc(size-pos);
+    char * part1 = (char*) malloc(pos + 1);
+    char * part2 = (char*) malloc(size-end + 1);
 
-    memcpy(part1, to_read, pos-1);
-    part1[pos] = '\0';
+    strncpy(part1, to_read, pos);
 
-    strcat(part1, replace_val);
-    memcpy(part2, to_read + end, size - end);
-    
-    char * result = malloc(strlen(part1) + strlen(part2) + 1);
-    
-    strcpy(result, part1);
-    strcat(result, part2);
-    result[strlen(part1) + strlen(part2)] = '\0';
+    part1[pos-1] = '\0';
+
+    strncpy(part2, to_read + end + 1, size - end);
+     
+    char * result = malloc(strlen(part1) + strlen(part2) + strlen(replace_val));
+
+    sprintf(result, "%s%s%s", part1, replace_val, part2);
+
     free(part1);
     free(part2);
 

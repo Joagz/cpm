@@ -1,4 +1,4 @@
-# íproject-name
+# project-name
 
 Modify your readme here
 thor: Joaquin Gomez
