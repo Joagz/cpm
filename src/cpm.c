@@ -16,7 +16,7 @@
 #include <getopt.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include "main.h"
+#include "cpm.h"
 #include "tokens.h"
 
 
