@@ -7,7 +7,7 @@ autoheader
 automake --add-missing
 
 # Run autoconf
-autoconf
+autoreconf -vfi
 
 # Configure and make
 ./configure
